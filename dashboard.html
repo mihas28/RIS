@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>SpaceFRIx</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"/>
+    <link rel="icon" href="./favicon.png" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.3/web3.min.js"></script>
+    <script src="knjiznice/js/kodadashboard.js"></script>
+    <link rel="stylesheet" type="text/css" href="knjiznice/css/stili.css">
+  </head>
+  <body onload="vrniPodatkeMisije()">
+    
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        
+        <a class="nav-link navbar-brand" href="index.html"
+        ><i class="fa-solid fa-rocket"></i> SpaceFRIx</a
+        >
+        <a class="nav-link navbar-brand" href="weather.html"
+        ><i class="fa-solid fa-cloud-sun"></i> Space weather </a
+        >
+        
+        <button
+                class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#menujska-vrstica"
+                aria-controls="navbarNavAltMarkup"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+        >
+            <span class="navbar-toggler-icon" title="Prikaži menu"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menujska-vrstica">
+            <div class="navbar-nav">
+            </div>
+            <div class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <span id="dodajGumb"></span>
+            </div>
+        </div>
+    </div>
+</nav>
+   
+    <br>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <b>Podatki o uporabniku</b>
+                </div>
+                <div class="card-body">
+                    <p><strong>Uporabniško ime:</strong> <span id="upoime"></span></p>
+                    <p><strong>Ime:</strong> <span id="imeupo"></span></p>
+                    <p><strong>Priimek:</strong> <span id="priimekupo"></span></p>
+                    <p><strong>Datum rojstva:</strong> <span id="datumrojstva"></span></p>
+                    <p><strong>Naslov:</strong> <span id="naslovupo"></span></p>
+                    <p style="margin-bottom: 21px;"><strong>Vloga:</strong> <span id="role"></span></p>
+                </div>
+            </div>
+        </div>
+        <!-- Desni stolpec za vnos nove rezervacije termina -->
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <div class="card">
+                <div class="card-header">
+                    <b>Kreiranje nove rezervacije termina</b>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="izbiraPlaneta">Izberite planet:</label>
+                            <select class="form-control" onchange="prikaziRazporozljiveTermine()" id="izbiraPlaneta">
+                                <option value="brez">...</option>
+                                <option value="luna">Luna</option>
+                                <option value="mars">Mars</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="izbiraStevilaLjudi">Izberite število ljudi:</label>
+                            <select class="form-control" id="izbiraStevilaLjudi">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="izbiraDatuma">Izberite datum in uro potovanja:</label>
+                            <select class="form-control" id="izbiraDatuma">
+                                <option value="brez">...</option>
+                            </select>
+                        </div>
+                    </form>
+                    <br>
+                    <button type="submit" onclick="rezervirajTermin()" class="btn btn-primary">Potrdi in plačaj rezervacijo</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+      <div class="row">
+          <div class="card mt-4">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                  <h2>Moje rezervacije <span id="ast-mis"></span></h2>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                   <thead>
+                       <tr>
+                           <th>ID rezervacije</th>
+                           <th>Število oseb</th>
+                           <th>Datum potovanja</th>
+                           <th>Planet</th>
+                           <th>QR Koda</th>
+                       </tr>
+                    </thead>
+                    <tbody id="tabelaRezervacija">
+                   </tbody>
+                </table>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    <div class="container hidden">
+      <div class="row">
+          <div class="card mt-4">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                  <h2>Razpisane misije <span id="ast-mis"></span></h2>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                   <thead>
+                       <tr>
+                           <th>ID misije</th>
+                           <th>Planet</th>
+                           <th>Vsa mesta</th>
+                           <th>Razporožljiva mesta</th>
+                           <th>Datum odhoda</th>
+                       </tr>
+                    </thead>
+                    <tbody>                   
+                        <tr>
+                            <td>#12345</td>
+                            <td>2</td>
+                            <td>2024-03-15</td>
+                            <td>Mars</td>
+                            <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=101" class="img-fluid" alt="QR Koda z vstopnicami"></td>
+                       </tr>                      
+                       <tr>
+                            <td>#12345</td>
+                            <td>2</td>
+                            <td>2024-03-15</td>
+                            <td>Mars</td>
+                            <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=102" class="img-fluid" alt="QR Koda z vstopnicami"></td>
+                       </tr>
+                       <tr>
+                            <td>#12345</td>
+                            <td>2</td>
+                            <td>2024-03-15</td>
+                            <td>Mars</td>
+                            <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=103" class="img-fluid" alt="QR Koda z vstopnicami"></td>
+                       </tr>
+                   </tbody>
+                </table>
+            </div>
+          </div>
+      </div>
+    
+      <div class="row">
+          <div class="card mt-4">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-lg-12 col-md-12 col-sm-12">
+                  <h2>Vse rezervacije <span id="ast-mis"></span></h2>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                   <thead>
+                       <tr>
+                           <th>ID rezervacije</th>
+                           <th>Število oseb</th>
+                           <th>Datum potovanja</th>
+                           <th>Planet</th>
+                           <th>QR Koda</th>
+                       </tr>
+                    </thead>
+                    <tbody>                       
+                        <tr>
+                            <td>#12345</td>
+                            <td>2</td>
+                            <td>2024-03-15</td>
+                            <td>Mars</td>
+                            <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=104" class="img-fluid" alt="QR Koda z vstopnicami"></td>
+                       </tr>                      
+                       <tr>
+                            <td>#12345</td>
+                            <td>2</td>
+                            <td>2024-03-15</td>
+                            <td>Mars</td>
+                            <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=105" class="img-fluid" alt="QR Koda z vstopnicami"></td>
+                       </tr>
+                       <tr>
+                            <td>#12345</td>
+                            <td>2</td>
+                            <td>2024-03-15</td>
+                            <td>Mars</td>
+                            <td><img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data=106" class="img-fluid" alt="QR Koda z vstopnicami"></td>
+                       </tr>
+                   </tbody>
+                </table>
+            </div>
+          </div>
+      </div>
+    </div>
+    
+    <div class="hidden1">
+      <div class="row">
+      <div class="col-lg-6 col-md-6 col-sm-6">
+        <div class="card mt-4">
+          <div class="card-header">
+            <div class="row">
+              <div class="col-lg-12 col-md-12 col-sm-12">
+                <h2>Dodaj misijo <span id="ast-mis"></span></h2>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Obrazec za dodajanje nove misije -->
+            <form>
+              <div class="form-group row">
+                <div class="col-sm-12">
+                  <label for="izbiraDatuma">Datum odhoda:</label>
+                  <input type="datetime-local" class="form-control" id="izbiraDatuma" required>
+                </div>
+                <div class="col-sm-12">
+                  <label for="izbiraPlaneta">Izberi planet:</label>
+                  <select class="form-control" id="izbiraPlaneta" required>
+                    <option value="Mars">Mars</option>
+                    <option value="Luna">Luna</option>
+                    <!-- Dodajte druge možnosti po potrebi -->
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="stRazpolozljivihMest">Število razpoložljivih mest:</label>
+                <input type="number" class="form-control" id="stRazpolozljivihMest" required>
+              </div>
+              <button type="submit" class="btn btn-success" style="margin-top: 20px; margin-bottom: 21px">Dodaj misijo</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 col-md-6 col-sm-6">
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="card mt-4">
+              <div class="card-header">
+                <div class="row">
+                  <div class="col-lg-8 col-md-8 col-sm-8">
+                    <b>Izbriši ID zapis</b> obstoječe misije
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-4">
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <span class="badge bg-secondary">ID misije</span><input id="preberiIDastronavt1" type="text" class="form-control form-control-sm mb-2" placeholder="A1234567890"/>
+                <button type="button" class="btn btn-danger btn-sm" onclick="brisiIDastronavta()">Izbriši misijo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-lg-12 col-md-12 col-sm-12">
+            <div class="card mt-4">
+              <div class="card-header">
+                <div class="row">
+                  <div class="col-lg-8 col-md-8 col-sm-8">
+                    <b>Izbriši ID zapis</b> obstoječe rezervacije
+                  </div>
+                  <div class="col-lg-4 col-md-4 col-sm-4">
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <span class="badge bg-secondary">ID rezervacije</span><input id="preberiIDmisija1" type="text" class="form-control form-control-sm mb-2" placeholder="M1234567890"/>
+                <button type="button" class="btn btn-danger btn-sm" onclick="brisiIDmisije()">Izbriši rezervacijo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    </div>
+    
+  <br>
+    
+  </body>
+</html>
